@@ -170,7 +170,7 @@ class VoiceOpsViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             _isProcessing.value = true
             try {
-                val parsed = repository.processVoiceText(text)
+                val parsed = repository.processVoiceText(text, _currentLanguage.value)
                 _latestResponse.value = parsed
             } catch (e: Exception) {
                 _latestResponse.value = ParsedIntentResponse(

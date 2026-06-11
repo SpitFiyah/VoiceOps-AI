@@ -262,15 +262,28 @@ class MainActivity : ComponentActivity(), TextToSpeech.OnInitListener {
         if (status == TextToSpeech.SUCCESS) {
             isTtsInitialized = true
             setTtsLanguageFor(viewModel.currentLanguage.value)
+            textToSpeech?.setSpeechRate(0.82f) // Paced, non-rushed natural rate
+            textToSpeech?.setPitch(0.96f)      // Warm tone to avoid screechy high frequencies
         } else {
             Log.e("MainActivity", "Automated Playback (TTS) initiation failed.")
         }
     }
 
     private fun speakOutLoud(text: String) {
-        if (isTtsInitialized) {
+        if (isTtsInitialized && text.isNotEmpty()) {
             setTtsLanguageFor(viewModel.currentLanguage.value)
-            textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "voiceops_speech_trigger")
+            
+            // Filter out formatting symbols like * or _ that choke up TTS or cause high frequency glitches
+            val cleanText = text
+                .replace(Regex("[*#_`\\[\\]{}()~]"), "")
+                .replace(Regex("\\s+"), " ")
+                .trim()
+                
+            if (cleanText.isNotEmpty()) {
+                textToSpeech?.setSpeechRate(0.82f) // Keep smooth pacing
+                textToSpeech?.setPitch(0.96f)      // Keep warm, deep, human profile
+                textToSpeech?.speak(cleanText, TextToSpeech.QUEUE_FLUSH, null, "voiceops_speech_trigger")
+            }
         }
     }
 

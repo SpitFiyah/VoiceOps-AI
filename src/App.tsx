@@ -398,6 +398,7 @@ export default function App() {
   // System states
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  const [showTechnicalSyncDetails, setShowTechnicalSyncDetails] = useState<boolean>(false);
   const [latestResponse, setLatestResponse] = useState<any | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [categoryFilter, setCategoryFilter] = useState<string>("All");
@@ -656,8 +657,8 @@ export default function App() {
           matchedVoice = voices.find(v => v.lang.toLowerCase().startsWith(langPrefix));
         }
 
-        // 3. Indian regional voice backup for mixed scripts/Hinglish
-        if (!matchedVoice) {
+        // 3. Indian regional voice backup only for English or Hinglish to prevent English voice reading regional scripts
+        if (!matchedVoice && (langToUse === "English" || langToUse === "Hinglish")) {
           matchedVoice = voices.find(v => v.lang.toLowerCase().includes("in"));
         }
 
@@ -669,7 +670,10 @@ export default function App() {
       }
     }
     
-    window.speechSynthesis.speak(utterance);
+    // Use a brief timeout to allow speechSynthesis.cancel() to fully clear browser state
+    setTimeout(() => {
+      window.speechSynthesis.speak(utterance);
+    }, 60);
   };
 
   // Native SpeechRecognition Web API binding
@@ -1153,26 +1157,16 @@ export default function App() {
           {/* Navigation / Header Bar */}
           <header className="flex flex-col gap-3.5 pb-4 border-b border-white/5">
             
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="bg-slate-900 border border-white/10 rounded-xl p-2.5 flex items-center justify-center shrink-0">
-                  <Mic className="h-6 w-6 text-cyan-400 animate-pulse" />
-                </div>
-                <div className="min-w-0">
-                  <h1 id="app-title" className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-200 bg-clip-text text-transparent truncate">
-                    {translate("APP_NAME")}
-                  </h1>
-                  <p className="text-[10px] text-slate-400 font-medium truncate">{translate("SUBTITLE")}</p>
-                </div>
+            <div className="flex items-center gap-3">
+              <div className="bg-slate-900 border border-white/10 rounded-xl p-2.5 flex items-center justify-center shrink-0">
+                <Mic className="h-6 w-6 text-cyan-400 animate-pulse" />
               </div>
-
-              {/* GitHub & Phone Run Widget Badge */}
-              <button
-                onClick={() => setIsMobileModalOpen(true)}
-                className="bg-slate-900/90 border border-cyan-500/30 hover:border-cyan-400/60 text-cyan-400 px-2.5 py-1.5 rounded-xl text-[10px] font-bold flex items-center gap-1.5 transition-all duration-200 shadow-lg shadow-cyan-950/20 shrink-0 cursor-pointer animate-pulse"
-              >
-                📱 <span className="hidden sm:inline">Get App / GitHub</span><span className="sm:hidden">GitHub</span>
-              </button>
+              <div className="min-w-0">
+                <h1 id="app-title" className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-200 bg-clip-text text-transparent truncate">
+                  {translate("APP_NAME")}
+                </h1>
+                <p className="text-[10px] text-slate-400 font-medium truncate">{translate("SUBTITLE")}</p>
+              </div>
             </div>
 
             {/* Quick Stats & Regional Localization Details */}
@@ -1440,30 +1434,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* Suggestion Demo Phrases Section */}
-            <div className="w-full mt-6 border-t border-white/5 pt-5">
-              <p className="text-center text-[10px] font-black text-slate-500 uppercase tracking-widest block">
-                ⚡ {translate("DEMO_CHIPS_HEADER")}
-              </p>
-              
-              <div className="flex flex-wrap items-center justify-center gap-2.5 mt-3 max-w-2xl mx-auto">
-                {(DEMO_CHIPS[currentLang] || DEMO_CHIPS["English"]).map((chip, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      setVoiceTextInputValue(chip.phrase);
-                      submitVoiceToParser(chip.phrase);
-                    }}
-                    className="group bg-slate-950/80 hover:bg-cyan-500 hover:text-slate-950 border border-white/5 hover:border-cyan-400 px-3 py-1.5 rounded-xl text-xxs font-semibold text-slate-300 transition-all duration-200 cursor-pointer shadow-md inline-flex items-center gap-1.5"
-                  >
-                    <span className="font-extrabold uppercase text-slate-500 group-hover:text-slate-900 group-hover:bg-black/10 bg-white/5 px-1.5 py-0.5 rounded-md">
-                      {chip.label}
-                    </span>
-                    <span className="truncate max-w-[150px] md:max-w-xs">{chip.phrase}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
+
 
           </div>
         </div>
@@ -1577,139 +1548,7 @@ export default function App() {
           </div>
         )}
 
-        {/* 📱 Phone App & GitHub Download Overlay Modal */}
-        {isMobileModalOpen && (
-          <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in text-slate-100">
-            <div className="bg-slate-900/98 border border-cyan-500/30 shadow-2xl shadow-cyan-950/40 rounded-3xl p-5 md:p-6 max-w-lg w-full relative z-10 transition-all max-h-[90vh] overflow-y-auto">
-              
-              <div className="flex items-center justify-between border-b border-white/5 pb-4">
-                <div className="flex items-center gap-2.5 text-cyan-400">
-                  <Smartphone className="h-5 w-5" />
-                  <h3 className="font-extrabold text-sm uppercase tracking-wider">Mobile Run & GitHub Source</h3>
-                </div>
-                <button
-                  onClick={() => {
-                    setIsMobileModalOpen(false);
-                    setHasCopiedUrl(false);
-                  }}
-                  className="p-1.5 text-slate-400 hover:text-slate-100 bg-white/5 rounded-lg cursor-pointer"
-                >
-                  ✕
-                </button>
-              </div>
 
-              {/* QR Code Segment */}
-              <div className="mt-5 flex flex-col items-center justify-center bg-slate-950/50 border border-white/5 p-5 rounded-2xl text-center">
-                <span className="text-[10px] font-black text-cyan-400 tracking-wider uppercase mb-1">
-                  📸 SCAN QR CODE TO RUN ON MOBILE INSTANTLY
-                </span>
-                <p className="text-[10px] text-slate-400 max-w-xs mb-4">
-                  Open your smartphone's camera utility and scan this code to load this voice applet with full microphone capabilities.
-                </p>
-                <div className="bg-white p-3 rounded-2xl shadow-xl transition-all duration-300 hover:scale-[1.03]">
-                  <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
-                      window.location.href.includes("localhost")
-                        ? "https://ais-pre-ocftemy7jaqjamlvbwjzco-974162963261.asia-southeast1.run.app"
-                        : window.location.href
-                    )}`}
-                    alt="Active App QR Code"
-                    className="w-[150px] h-[150px] md:w-[170px] md:h-[170px]"
-                  />
-                </div>
-              </div>
-
-              {/* Direct Link Copy Segment */}
-              <div className="mt-5 space-y-2">
-                <span className="text-[10px] font-black text-slate-400 tracking-wider uppercase block">
-                  🔗 Share App URL
-                </span>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    readOnly
-                    value={window.location.href.includes("localhost") ? "https://ais-pre-ocftemy7jaqjamlvbwjzco-974162963261.asia-southeast1.run.app" : window.location.href}
-                    className="flex-1 bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-xs font-mono select-all text-slate-300 outline-none"
-                  />
-                  <button
-                    onClick={() => {
-                      const linkText = window.location.href.includes("localhost") ? "https://ais-pre-ocftemy7jaqjamlvbwjzco-974162963261.asia-southeast1.run.app" : window.location.href;
-                      navigator.clipboard.writeText(linkText);
-                      setHasCopiedUrl(true);
-                      setTimeout(() => setHasCopiedUrl(false), 2000);
-                    }}
-                    className={`px-4 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
-                      hasCopiedUrl
-                        ? "bg-emerald-500 text-slate-950"
-                        : "bg-slate-800 hover:bg-slate-700 text-slate-100 border border-white/10"
-                    }`}
-                  >
-                    {hasCopiedUrl ? (
-                      <>
-                        <Check className="h-3.5 w-3.5" />
-                        Copied
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-3.5 w-3.5" />
-                        Copy
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* GitHub Developer Export Instructions */}
-              <div className="mt-6 border-t border-white/5 pt-5 space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="bg-slate-950 border border-white/15 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold text-cyan-400 shrink-0 select-none">
-                    1
-                  </div>
-                  <div className="space-y-1">
-                    <h4 className="text-xs font-black text-white uppercase tracking-wider">Download / Push Code from GitHub</h4>
-                    <p className="text-xs text-slate-400">
-                      In the top-right corner of Google AI Studio (the outer workspace toolbar), click the default Export button or Settings Gear to choose <strong className="text-cyan-400 text-[11px]">Vibe Export / Sync to personal GitHub Repository</strong> or download a complete project <strong className="text-cyan-400 text-[11px]">ZIP Bundle</strong> directly!
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="bg-slate-950 border border-white/15 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold text-cyan-400 shrink-0 select-none">
-                    2
-                  </div>
-                  <div className="space-y-1">
-                    <h4 className="text-xs font-black text-white uppercase tracking-wider">Save App onto Phones (Progressive Web App)</h4>
-                    <p className="text-xs text-slate-400">
-                      Once opened on your phone, you can install it for a pure localized app experience:
-                    </p>
-                    <div className="text-[11px] text-slate-400 space-y-1.5 mt-2 pl-1 font-semibold leading-relaxed">
-                      <p className="flex items-center gap-1.5 text-slate-300">
-                        🤖 <strong className="text-orange-400 font-bold">Android Chrome:</strong> Tap <strong className="bg-slate-950 px-1 py-0.5 rounded text-white text-[10px]">⁝ Menu</strong> &gt; Select <strong className="text-white hover:underline">"Add to Home screen"</strong>.
-                      </p>
-                      <p className="flex items-center gap-1.5 text-slate-300">
-                        🍏 <strong className="text-cyan-400 font-bold">Apple iOS Safari:</strong> Tap <strong className="bg-slate-950 px-1.5 py-0.5 rounded text-white text-[10px]">⎙ Share</strong> &gt; Select <strong className="text-white hover:underline">"Add to Home Screen"</strong>.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Close Button */}
-              <div className="mt-6 pt-4 border-t border-white/5 flex">
-                <button
-                  onClick={() => {
-                    setIsMobileModalOpen(false);
-                    setHasCopiedUrl(false);
-                  }}
-                  className="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl text-xs font-black shadow-lg shadow-cyan-400/10 transition cursor-pointer"
-                >
-                  Done, Let's Go! 📱
-                </button>
-              </div>
-
-            </div>
-          </div>
-        )}
 
         {/* Tab switcher Navigation Slider */}
         <div className="mt-8 flex bg-slate-900/60 p-1.5 rounded-2xl border border-white/5 shadow-inner shrink-0">
@@ -1929,28 +1768,69 @@ export default function App() {
                 {/* Secure Sync Management card */}
                 <div className="bg-gradient-to-br from-slate-900 to-slate-950 border border-white/5 rounded-3xl p-5 shadow-xl relative group">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-2xl" />
-                  <h3 className="text-xs font-black text-slate-200 uppercase tracking-widest flex items-center gap-2">
-                    <Database className="h-4.5 w-4.5 text-cyan-400" />
-                    <span>Uplink Synchronization</span>
-                  </h3>
+                  
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-xs font-black text-slate-200 uppercase tracking-widest flex items-center gap-2">
+                      <RefreshCw className="h-4.5 w-4.5 text-cyan-400" />
+                      <span>Uplink Synchronize</span>
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowTechnicalSyncDetails(prev => !prev);
+                      }}
+                      className="relative z-10 p-2 bg-white/5 hover:bg-white/15 hover:text-cyan-400 border border-white/5 hover:border-cyan-500/30 rounded-xl text-slate-400 transition-all duration-200 cursor-pointer shrink-0 flex items-center justify-center active:scale-95"
+                      title="Show Technical Details"
+                    >
+                      <Info className="h-4.5 w-4.5 text-cyan-400" />
+                    </button>
+                  </div>
+
                   <p className="text-xxs text-slate-400 mt-2">
-                    Offline Ledger Logs are buffered locally on the device (SQLite/IndexedDB). Synchronize with Cloud Ledger services for invoice tracking.
+                    Keeps all your recorded sales, purchases, and cash transactions safely backed up online.
                   </p>
+
+                  {showTechnicalSyncDetails && (
+                    <div className="mt-3.5 pt-3.5 border-t border-white/5 space-y-2 text-xxs leading-relaxed animate-fade-in text-slate-300">
+                      <p className="font-bold text-slate-200">
+                        Architecture Details:
+                      </p>
+                      <ul className="list-disc pl-4 space-y-1 text-slate-400">
+                        <li>Local persistence uses Android Room DB with SQLite schemas.</li>
+                        <li>Buffered transaction streams are cached in a safe local sandbox.</li>
+                        <li>Transactions synchronize using JSON payload handshakes with cloud microservices.</li>
+                        <li>Un-synced changes are flagged as offline fallbacks and are auto-resolved upon connection.</li>
+                      </ul>
+                      
+                      <div className="bg-slate-950/60 p-2.5 rounded-xl border border-white/5 font-mono text-[10px] text-slate-400 space-y-1 mt-2">
+                        <div>Database Type: SQLite (Local) / Firestore (Cloud)</div>
+                        <div>Total Records: {transactions.length} items</div>
+                        <div>Pending Push Queue: {transactions.filter((t) => !t.isSynced).length} items</div>
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="mt-4 bg-slate-950/80 p-3 rounded-2xl border border-white/5 flex justify-between items-center text-xxs font-bold">
-                    <span className="text-slate-400">Un-synced Records:</span>
-                    <span className="text-amber-400 font-mono">
-                      {transactions.filter((t) => !t.isSynced).length} items pending
-                    </span>
+                    <span className="text-slate-400">Sync Status:</span>
+                    {transactions.filter((t) => !t.isSynced).length > 0 ? (
+                      <span className="text-amber-400 font-mono">
+                        {transactions.filter((t) => !t.isSynced).length} items pending
+                      </span>
+                    ) : (
+                      <span className="text-emerald-400 font-mono">
+                        ✓ All synced safely
+                      </span>
+                    )}
                   </div>
 
                   <button
                     onClick={syncOfflineTransactions}
                     disabled={isSyncing}
-                    className="w-full mt-4 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-slate-800 text-slate-950 disabled:text-slate-500 font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-lg transition"
+                    className="w-full mt-4 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-slate-800 text-slate-950 disabled:text-slate-500 font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-lg transition cursor-pointer"
                   >
                     <RefreshCw className={`h-4 w-4 ${isSyncing ? "animate-spin" : ""}`} />
-                    {isSyncing ? "Syncing..." : "Synchronize Database"}
+                    {isSyncing ? "Syncing..." : "Synchronize"}
                   </button>
                 </div>
 

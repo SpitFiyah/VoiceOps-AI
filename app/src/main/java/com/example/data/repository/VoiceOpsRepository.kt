@@ -101,8 +101,8 @@ class VoiceOpsRepository(private val dao: VoiceOpsDao) {
         }
     }
 
-    suspend fun processVoiceText(text: String): ParsedIntentResponse {
-        val result = GeminiClient.parseVoiceIntent(text)
+    suspend fun processVoiceText(text: String, language: String): ParsedIntentResponse {
+        val result = GeminiClient.parseVoiceIntent(text, language)
         
         if (result.type == "transaction") {
             val isSynced = !result.isOfflineFallback

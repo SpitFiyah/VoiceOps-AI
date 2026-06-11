@@ -1,0 +1,9 @@
+# Ensure binary files are not corrupted by line ending normalization
+*.jar binary
+*.png binary
+*.jpg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pb binary
+*.apk binary

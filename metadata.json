@@ -1,0 +1,6 @@
+{
+  "name": "VoiceOPS AI",
+  "description": "Voice-First Business OS for the Informal Economy, featuring a stunning glassmorphism user interface, intelligent real-time voice ledger, AI-driven mandi feeds, and instant credit eligibility scores.",
+  "requestFramePermissions": ["microphone", "geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

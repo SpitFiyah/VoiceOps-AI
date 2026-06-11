@@ -24,7 +24,10 @@ import {
   HelpCircle,
   Clock,
   ExternalLink,
-  Coins
+  Coins,
+  Copy,
+  Check,
+  Smartphone
 } from "lucide-react";
 
 // Multi-Language Localization Engine
@@ -377,6 +380,8 @@ export default function App() {
   // Theme & Language state
   const [currentLang, setCurrentLang] = useState<string>("English");
   const [wasChangedManually, setWasChangedManually] = useState<boolean>(false);
+  const [isMobileModalOpen, setIsMobileModalOpen] = useState<boolean>(false);
+  const [hasCopiedUrl, setHasCopiedUrl] = useState<boolean>(false);
 
   // Position, Currency & Regional dynamics
   const [detectedCountryCode, setDetectedCountryCode] = useState<string>("IN");
@@ -1148,16 +1153,26 @@ export default function App() {
           {/* Navigation / Header Bar */}
           <header className="flex flex-col gap-3.5 pb-4 border-b border-white/5">
             
-            <div className="flex items-center gap-3">
-              <div className="bg-slate-900 border border-white/10 rounded-xl p-2.5 flex items-center justify-center">
-                <Mic className="h-6 w-6 text-cyan-400 animate-pulse" />
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="bg-slate-900 border border-white/10 rounded-xl p-2.5 flex items-center justify-center shrink-0">
+                  <Mic className="h-6 w-6 text-cyan-400 animate-pulse" />
+                </div>
+                <div className="min-w-0">
+                  <h1 id="app-title" className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-200 bg-clip-text text-transparent truncate">
+                    {translate("APP_NAME")}
+                  </h1>
+                  <p className="text-[10px] text-slate-400 font-medium truncate">{translate("SUBTITLE")}</p>
+                </div>
               </div>
-              <div className="min-w-0">
-                <h1 id="app-title" className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-200 bg-clip-text text-transparent truncate">
-                  {translate("APP_NAME")}
-                </h1>
-                <p className="text-[10px] text-slate-400 font-medium truncate">{translate("SUBTITLE")}</p>
-              </div>
+
+              {/* GitHub & Phone Run Widget Badge */}
+              <button
+                onClick={() => setIsMobileModalOpen(true)}
+                className="bg-slate-900/90 border border-cyan-500/30 hover:border-cyan-400/60 text-cyan-400 px-2.5 py-1.5 rounded-xl text-[10px] font-bold flex items-center gap-1.5 transition-all duration-200 shadow-lg shadow-cyan-950/20 shrink-0 cursor-pointer animate-pulse"
+              >
+                📱 <span className="hidden sm:inline">Get App / GitHub</span><span className="sm:hidden">GitHub</span>
+              </button>
             </div>
 
             {/* Quick Stats & Regional Localization Details */}
@@ -1555,6 +1570,140 @@ export default function App() {
                   className="flex-1 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl text-xs font-black shadow-lg shadow-cyan-400/10 transition"
                 >
                   {translate("DONE_BUTTON")}
+                </button>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* 📱 Phone App & GitHub Download Overlay Modal */}
+        {isMobileModalOpen && (
+          <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in text-slate-100">
+            <div className="bg-slate-900/98 border border-cyan-500/30 shadow-2xl shadow-cyan-950/40 rounded-3xl p-5 md:p-6 max-w-lg w-full relative z-10 transition-all max-h-[90vh] overflow-y-auto">
+              
+              <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                <div className="flex items-center gap-2.5 text-cyan-400">
+                  <Smartphone className="h-5 w-5" />
+                  <h3 className="font-extrabold text-sm uppercase tracking-wider">Mobile Run & GitHub Source</h3>
+                </div>
+                <button
+                  onClick={() => {
+                    setIsMobileModalOpen(false);
+                    setHasCopiedUrl(false);
+                  }}
+                  className="p-1.5 text-slate-400 hover:text-slate-100 bg-white/5 rounded-lg cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* QR Code Segment */}
+              <div className="mt-5 flex flex-col items-center justify-center bg-slate-950/50 border border-white/5 p-5 rounded-2xl text-center">
+                <span className="text-[10px] font-black text-cyan-400 tracking-wider uppercase mb-1">
+                  📸 SCAN QR CODE TO RUN ON MOBILE INSTANTLY
+                </span>
+                <p className="text-[10px] text-slate-400 max-w-xs mb-4">
+                  Open your smartphone's camera utility and scan this code to load this voice applet with full microphone capabilities.
+                </p>
+                <div className="bg-white p-3 rounded-2xl shadow-xl transition-all duration-300 hover:scale-[1.03]">
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
+                      window.location.href.includes("localhost")
+                        ? "https://ais-pre-ocftemy7jaqjamlvbwjzco-974162963261.asia-southeast1.run.app"
+                        : window.location.href
+                    )}`}
+                    alt="Active App QR Code"
+                    className="w-[150px] h-[150px] md:w-[170px] md:h-[170px]"
+                  />
+                </div>
+              </div>
+
+              {/* Direct Link Copy Segment */}
+              <div className="mt-5 space-y-2">
+                <span className="text-[10px] font-black text-slate-400 tracking-wider uppercase block">
+                  🔗 Share App URL
+                </span>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    readOnly
+                    value={window.location.href.includes("localhost") ? "https://ais-pre-ocftemy7jaqjamlvbwjzco-974162963261.asia-southeast1.run.app" : window.location.href}
+                    className="flex-1 bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-xs font-mono select-all text-slate-300 outline-none"
+                  />
+                  <button
+                    onClick={() => {
+                      const linkText = window.location.href.includes("localhost") ? "https://ais-pre-ocftemy7jaqjamlvbwjzco-974162963261.asia-southeast1.run.app" : window.location.href;
+                      navigator.clipboard.writeText(linkText);
+                      setHasCopiedUrl(true);
+                      setTimeout(() => setHasCopiedUrl(false), 2000);
+                    }}
+                    className={`px-4 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                      hasCopiedUrl
+                        ? "bg-emerald-500 text-slate-950"
+                        : "bg-slate-800 hover:bg-slate-700 text-slate-100 border border-white/10"
+                    }`}
+                  >
+                    {hasCopiedUrl ? (
+                      <>
+                        <Check className="h-3.5 w-3.5" />
+                        Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-3.5 w-3.5" />
+                        Copy
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* GitHub Developer Export Instructions */}
+              <div className="mt-6 border-t border-white/5 pt-5 space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="bg-slate-950 border border-white/15 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold text-cyan-400 shrink-0 select-none">
+                    1
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="text-xs font-black text-white uppercase tracking-wider">Download / Push Code from GitHub</h4>
+                    <p className="text-xs text-slate-400">
+                      In the top-right corner of Google AI Studio (the outer workspace toolbar), click the default Export button or Settings Gear to choose <strong className="text-cyan-400 text-[11px]">Vibe Export / Sync to personal GitHub Repository</strong> or download a complete project <strong className="text-cyan-400 text-[11px]">ZIP Bundle</strong> directly!
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="bg-slate-950 border border-white/15 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold text-cyan-400 shrink-0 select-none">
+                    2
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="text-xs font-black text-white uppercase tracking-wider">Save App onto Phones (Progressive Web App)</h4>
+                    <p className="text-xs text-slate-400">
+                      Once opened on your phone, you can install it for a pure localized app experience:
+                    </p>
+                    <div className="text-[11px] text-slate-400 space-y-1.5 mt-2 pl-1 font-semibold leading-relaxed">
+                      <p className="flex items-center gap-1.5 text-slate-300">
+                        🤖 <strong className="text-orange-400 font-bold">Android Chrome:</strong> Tap <strong className="bg-slate-950 px-1 py-0.5 rounded text-white text-[10px]">⁝ Menu</strong> &gt; Select <strong className="text-white hover:underline">"Add to Home screen"</strong>.
+                      </p>
+                      <p className="flex items-center gap-1.5 text-slate-300">
+                        🍏 <strong className="text-cyan-400 font-bold">Apple iOS Safari:</strong> Tap <strong className="bg-slate-950 px-1.5 py-0.5 rounded text-white text-[10px]">⎙ Share</strong> &gt; Select <strong className="text-white hover:underline">"Add to Home Screen"</strong>.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Close Button */}
+              <div className="mt-6 pt-4 border-t border-white/5 flex">
+                <button
+                  onClick={() => {
+                    setIsMobileModalOpen(false);
+                    setHasCopiedUrl(false);
+                  }}
+                  className="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl text-xs font-black shadow-lg shadow-cyan-400/10 transition cursor-pointer"
+                >
+                  Done, Let's Go! 📱
                 </button>
               </div>
 

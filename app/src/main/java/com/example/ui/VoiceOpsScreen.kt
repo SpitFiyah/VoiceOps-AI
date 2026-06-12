@@ -270,14 +270,13 @@ fun VoiceOpsScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Box(
+                        Image(
+                            painter = painterResource(id = R.drawable.image),
+                            contentDescription = "VoiceOPS AI Logo",
                             modifier = Modifier
                                 .size(56.dp)
                                 .clip(RoundedCornerShape(14.dp))
-                                .border(
-                                    BorderStroke(1.dp, Color(0x33FFFFFF)),
-                                    RoundedCornerShape(14.dp)
-                                )
+                                .border(BorderStroke(1.dp, Color(0x33FFFFFF)), RoundedCornerShape(14.dp))
                         )
                         Column {
                             Text(

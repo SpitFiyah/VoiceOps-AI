@@ -130,7 +130,7 @@ object GeminiClient {
             val response = client.newCall(request).execute()
             if (!response.isSuccessful) {
                 Log.e(TAG, "API call failed code=${response.code}, body=${response.body?.string()}")
-                return@withContext getMockResponse(userInput).copy(isOfflineFallback = true)
+                return@withContext getMockResponse(userInput, language).copy(isOfflineFallback = true)
             }
 
             val body = response.body?.string() ?: ""
@@ -171,7 +171,7 @@ object GeminiClient {
             )
         } catch (e: Exception) {
             Log.e(TAG, "Failed parsing voice intent with Gemini. Reverting to local NLP.", e)
-            getMockResponse(userInput).copy(isOfflineFallback = true)
+            getMockResponse(userInput, language).copy(isOfflineFallback = true)
         }
     }
 
@@ -396,11 +396,11 @@ object GeminiClient {
                 val extText = when (language) {
                     "Hindi" -> if (amount > 0.0) "उधार दर्ज: $party को ₹$amount उधार दिए।" else "उधार दर्ज: $party को दिए।"
                     "Hinglish" -> if (amount > 0.0) "Udhaar likh liya: $party ko ₹$amount udhaar diye." else "Udhaar likh liya: $party ko udhaar diye."
-                    "Tamil" -> if (amount > 0.0) "கடன் பதிவு செய்யப்பட்டது: $partyக்கு ₹$amount." else "கடன் பதிவு செய்யப்பட்டது: $partyக்கு."
-                    "Telugu" -> if (amount > 0.0) "అప్పు నమోదు చేయబడింది: $partyకి ₹$amount." else "అప్పు నమోదు చేయబడింది: $partyకి."
-                    "Kannada" -> if (amount > 0.0) "ಉದ್ರಿ ದಾಖಲಿಸಲಾಗಿದೆ: $partyಗೆ ₹$amount." else "ಉದ್ರಿ ದಾಖಲಿಸಲಾಗಿದೆ: $partyಗೆ."
-                    "Bengali" -> if (amount > 0.0) "বকেয়া নথিভুক্ত: $partyকে ₹$amount ধার দেওয়া হয়েছে।" else "বকেয়া নথিভুক্ত: $partyকে ধার দেওয়া হয়েছে।"
-                    "Marathi" -> if (amount > 0.0) "उधारी नोंदवली गेली: $partyला ₹$amount." else "उधारी नोंदवली गेली: $partyला."
+                    "Tamil" -> if (amount > 0.0) "கடன் பதிவு செய்யப்பட்டது: ${party}க்கு ₹$amount." else "கடன் பதிவு செய்யப்பட்டது: ${party}க்கு."
+                    "Telugu" -> if (amount > 0.0) "అప్పు నమోదు చేయబడింది: ${party}కి ₹$amount." else "అప్పు నమోదు చేయబడింది: ${party}కి."
+                    "Kannada" -> if (amount > 0.0) "ಉದ್ರಿ ದಾಖಲಿಸಲಾಗಿದೆ: ${party}ಗೆ ₹$amount." else "ಉದ್ರಿ ದಾಖಲಿಸಲಾಗಿದೆ: ${party}ಗೆ."
+                    "Bengali" -> if (amount > 0.0) "বকেয়া নথিভুক্ত: ${party}কে ₹$amount ধার দেওয়া হয়েছে।" else "বকেয়া নথিভুক্ত: ${party}কে ধার দেওয়া হয়েছে।"
+                    "Marathi" -> if (amount > 0.0) "उधारी नोंदवली गेली: ${party}ला ₹$amount." else "उधारी नोंदवली गेली: ${party}ला."
                     else -> if (amount > 0.0) "Udhaar Logged: Lent Rs $amount to $party." else "Udhaar Logged: Lent to $party."
                 }
                 

@@ -682,15 +682,17 @@ fun VoiceOpsScreen(
                                     RoundedCornerShape(12.dp)
                                 )
                                 .clickable { activeTab = index }
-                                .padding(vertical = 10.dp),
+                                .padding(vertical = 8.dp, horizontal = 4.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = title,
                                 color = if (selected) Color.White else Color(0x99FFFFFF),
                                 fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                                fontSize = 12.sp,
-                                maxLines = 1
+                                fontSize = 11.sp,
+                                textAlign = TextAlign.Center,
+                                lineHeight = 14.sp,
+                                maxLines = 2
                             )
                         }
                     }
@@ -825,7 +827,12 @@ fun VoiceOpsScreen(
                                     shape = RoundedCornerShape(12.dp),
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    Text(translate("DONE_BUTTON"), fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                                    Text(
+                                        translate("DONE_BUTTON"), 
+                                        fontWeight = FontWeight.Bold, 
+                                        fontSize = 14.sp, 
+                                        textAlign = TextAlign.Center
+                                    )
                                 }
                             }
                         }
@@ -1068,7 +1075,7 @@ fun LedgerTab(
                         ),
                         shape = RoundedCornerShape(8.dp),
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                        modifier = Modifier.height(32.dp)
+                        modifier = Modifier.defaultMinSize(minHeight = 32.dp)
                     ) {
                         if (isSyncing) {
                             CircularProgressIndicator(
@@ -1295,7 +1302,12 @@ fun LedgerTab(
                     ) {
                         Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text(translate("LOAD_SAMPLE_BUTTON"), fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                        Text(
+                            translate("LOAD_SAMPLE_BUTTON"), 
+                            fontSize = 12.sp, 
+                            fontWeight = FontWeight.SemiBold, 
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
             }
@@ -1964,7 +1976,13 @@ fun CreditTab(creditScore: Int, volume: Double, currentLang: String, currencySym
         ) {
             Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFF00E5FF))
             Spacer(modifier = Modifier.width(8.dp))
-            Text(translate("APPLY_LOAN_BUTTON"), fontWeight = FontWeight.Bold, fontSize = 11.sp, letterSpacing = 0.5.sp)
+            Text(
+                translate("APPLY_LOAN_BUTTON"), 
+                fontWeight = FontWeight.Bold, 
+                fontSize = 11.sp, 
+                letterSpacing = 0.5.sp, 
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
@@ -2180,7 +2198,9 @@ fun DemoPhraseChip(
                 text = label,
                 color = Color.White,
                 fontSize = 10.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                lineHeight = 14.sp
             )
         }
     }

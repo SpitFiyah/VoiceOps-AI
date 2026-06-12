@@ -1649,7 +1649,7 @@ export default function App() {
 
                 {/* Ledger Timline Records Output */}
                 {filteredTrans.length === 0 ? (
-                  <div className="bg-slate-905 border border-white/5 rounded-2xl p-10 text-center">
+                  <div className="bg-slate-900/50 border border-white/5 rounded-2xl p-10 text-center">
                     <p className="text-slate-500 text-xs font-semibold">No transactions match the selected filters.</p>
                     <p className="text-slate-600 text-[10px] mt-1.5">Tap "Seed Demo Data" above, or speak using the microphone!</p>
                   </div>

@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.R
 import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.example.data.api.ParsedIntentResponse
 import com.example.data.db.InventoryEntity
@@ -270,20 +271,17 @@ fun VoiceOpsScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-<<<<<<< HEAD
                         Image(
-                            painter = painterResource(id = R.drawable.img_app_icon_1781203072200),
+                            painter = painterResource(id = R.drawable.logo),
                             contentDescription = "VoiceOPS AI Logo",
+                            contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .size(56.dp)
                                 .clip(RoundedCornerShape(14.dp))
-                                .border(BorderStroke(1.dp, Color(0x33FFFFFF)), RoundedCornerShape(14.dp))
-=======
-                        Text(
-                            text = "VOICEOPS",
-                            color = Color.White,
-                            modifier = Modifier.padding(8.dp)
->>>>>>> 881729c (logo related bug fixes)
+                                .border(
+                                    BorderStroke(1.dp, Color(0x33FFFFFF)),
+                                    RoundedCornerShape(14.dp)
+                                )
                         )
                         Column {
                             Text(

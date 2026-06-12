@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.R
 import androidx.compose.foundation.Image
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.example.data.api.ParsedIntentResponse
 import com.example.data.db.InventoryEntity
@@ -274,7 +273,6 @@ fun VoiceOpsScreen(
                         Image(
                             painter = painterResource(id = R.drawable.logo),
                             contentDescription = "VoiceOPS AI Logo",
-                            contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .size(56.dp)
                                 .clip(RoundedCornerShape(14.dp))

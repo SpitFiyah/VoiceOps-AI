@@ -182,7 +182,7 @@ object GeminiClient {
             return match.groupValues[1].toDoubleOrNull()
         }
         // Fallback to standalone numbers that aren't preceded by currency indicators
-        val numberRegex = Regex("""(?<!rs\s)(?<!rs\.\s)(?<!₹\s)(?<!₹)(?<!rupees\s)(?<!rupee\s)\b(\d+(?:\.\d+)?)\b""")
+        val numberRegex = Regex("""(?<!rs\s|rs\.\s|₹\s|₹|rupees\s|rupee\s)\b(\d+(?:\.\d+)?)\b""")
         val matches = numberRegex.findAll(text)
         for (m in matches) {
             val num = m.groupValues[1].toDoubleOrNull()

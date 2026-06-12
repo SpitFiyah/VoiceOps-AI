@@ -7,8 +7,25 @@ import { createServer as createViteServer } from "vite";
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+let serverDirname = "";
+
+try {
+  if (typeof __dirname !== "undefined" && __dirname) {
+    serverDirname = __dirname;
+  }
+} catch (e) {}
+
+if (!serverDirname) {
+  try {
+    if (typeof import.meta !== "undefined" && import.meta && import.meta.url) {
+      serverDirname = path.dirname(fileURLToPath(import.meta.url));
+    }
+  } catch (e) {}
+}
+
+if (!serverDirname) {
+  serverDirname = process.cwd();
+}
 
 async function startServer() {
   const app = express();
@@ -379,7 +396,7 @@ This is a direct hard restriction to keep synthesized audio outputs in synchroni
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(__dirname, "dist");
+    const distPath = path.join(serverDirname, "dist");
     app.use(express.static(distPath));
     app.get("*", (req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
